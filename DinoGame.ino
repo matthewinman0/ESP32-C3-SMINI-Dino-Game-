@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Preferences.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -20,6 +21,10 @@ bool jumping = false;
 int obstacleX = SCREEN_WIDTH;
 int speed = 2;
 int score = 0;
+int highScore = 0;
+
+// Preferences for storing high score
+Preferences prefs;
 
 // Static dino bitmap (16x16)
 const unsigned char dinoBitmap[] PROGMEM = {
@@ -49,6 +54,10 @@ void setup() {
   display.display();
 
   pinMode(JUMP_BUTTON, INPUT_PULLUP);
+
+  // Initialize preferences and read high score
+  prefs.begin("dinoGame", false);
+  highScore = prefs.getInt("highScore", 0);
 }
 
 void loop() {
@@ -77,14 +86,23 @@ void loop() {
 
   // Collision detection
   if(obstacleX < dinoX + DINO_W && obstacleX + (OBSTACLE_W - 2)> dinoX && dinoY + DINO_H > 48) {
+    // Update high score if needed
+    if(score > highScore) {
+      highScore = score;
+      prefs.putInt("highScore", highScore);
+    }
+
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(WHITE);
-    display.setCursor(20, 28);
+    display.setCursor(20, 20);
     display.print("GAME OVER");
-    display.setCursor(20, 40);
+    display.setCursor(20, 35);
     display.print("Score: ");
     display.print(score);
+    display.setCursor(20, 50);
+    display.print("High: ");
+    display.print(highScore);
     display.display();
     delay(2000);
 
@@ -110,12 +128,15 @@ void loop() {
   // Draw ground
   display.drawLine(0, 64, SCREEN_WIDTH, 64, WHITE);
 
-  // Draw score
+  // Draw score and high score
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(50, 0);
   display.print("Score:");
   display.print(score);
+  display.setCursor(0, 0);
+  display.print("High:");
+  display.print(highScore);
 
   display.display();
   delay(30);
