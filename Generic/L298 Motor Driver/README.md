@@ -56,7 +56,6 @@ By setting these pins HIGH or LOW in different combinations, you can make the mo
 > **Note:** ENA/ENB must have a non-zero PWM value for the motor to actually move, even if the direction pins are set correctly.
 ## Wiring
 
-## Wiring
 
 | L298N Pin | ESP32 Pin                    | Notes                          |
 |----------|------------------------------|--------------------------------|
