@@ -56,46 +56,76 @@ By setting these pins HIGH or LOW in different combinations, you can make the mo
 > **Note:** ENA/ENB must have a non-zero PWM value for the motor to actually move, even if the direction pins are set correctly.
 ## Wiring
 
-| L298N Pin | ESP32 Pin                         | Notes                                 |
-|----------|----------------------------------|---------------------------------------|
-| ENA      | GPIO 18                          | PWM speed control, Motor A            |
-| IN1      | GPIO 19                          | Direction, Motor A                    |
-| IN2      | GPIO 21                          | Direction, Motor A                    |
-| ENB      | GPIO 14                          | PWM speed control, Motor B            |
-| IN3      | GPIO 26                          | Direction, Motor B                    |
-| IN4      | GPIO 27                          | Direction, Motor B                    |
-| GND      | GND                              | Common ground                         |
-| +12V     | Motor supply                     | 7–35V DC motor power                  |
-| +5V (out)| 3.3V via regulator / 5V pin      | See note below                        |
-⚡ Powering the ESP32 from the L298N
-The L298N has an onboard 5V regulator that outputs 5V on its +5V pin (when the jumper is in place). This can be used to power the ESP32 directly via its VIN pin, removing the need for a separate USB or power supply for the microcontroller. Just make sure the motor supply voltage is within the regulator's supported range (typically up to ~35V, and at least ~7V for the regulator to output a stable 5V).
----
-## Code Explained:
+## Wiring
 
-Pin definitions at the top assign GPIO numbers to each L298N control pin for both motors.
-PWM config sets up a 2000 Hz PWM signal with 8-bit resolution (values 0–255) — this is fed into ENA and ENB to control motor speed.
-In `setup()`:
-All direction pins (IN1–IN4) are set as outputs and initialised LOW (motors off)
-`ledcAttachChannel()` binds ENA and ENB to their respective LEDC channels
-`ledcWrite()` sets initial speed to 0
-In `loop()`:
-Both motors are set to full speed (`255`) via `ledcWrite()`
-Direction pins are set HIGH/LOW to drive both motors forward
-Then direction pins are flipped to reverse both motors
+| L298N Pin | ESP32 Pin                    | Notes                          |
+|----------|------------------------------|--------------------------------|
+| ENA      | GPIO 18                      | PWM speed control (Motor A)    |
+| IN1      | GPIO 19                      | Direction control (Motor A)    |
+| IN2      | GPIO 21                      | Direction control (Motor A)    |
+| ENB      | GPIO 14                      | PWM speed control (Motor B)    |
+| IN3      | GPIO 26                      | Direction control (Motor B)    |
+| IN4      | GPIO 27                      | Direction control (Motor B)    |
+| GND      | GND                          | Common ground                  |
+| +12V     | Motor supply                 | 7–35V DC motor power input     |
+| +5V (out)| 5V / VIN (ESP32)             | See power note below           |
+
+---
+
+## ⚡ Powering the ESP32 from the L298N
+
+The L298N includes an onboard 5V regulator (enabled via jumper) that outputs 5V on the **+5V pin**. This can be used to power the ESP32 through its **VIN (5V) pin**, removing the need for a separate power supply.
+
+**Important considerations:**
+
+- The motor supply voltage must typically be **≥ 7V** for the regulator to produce a stable 5V output  
+- Do **not** exceed the module’s safe input range (commonly up to ~35V)  
+- Ensure your motors do not draw excessive current that could destabilise the regulator  
+
+---
+
+## Code Overview
+
+### Pin Definitions
+
+At the top of the code, GPIO pins are assigned to each L298N control pin for both motors.
+
+### PWM Configuration
+
+- Frequency: **2000 Hz**
+- Resolution: **8-bit** (values from 0–255)
+
+PWM is applied to **ENA** and **ENB** using the ESP32’s LEDC peripheral to control motor speed.
+
+---
+
+### `setup()`
+
+- All direction pins (`IN1–IN4`) are configured as outputs  
+- Motors are initialised in a stopped state (LOW)  
+- PWM channels are attached to ENA and ENB  
+- Initial speed is set to **0**  
+
+---
+
+### `loop()`
+
+- Motors are set to full speed (`255`)  
+- Direction pins are configured for **forward motion**  
+- Then flipped to **reverse direction**  
+
 ```cpp
-// Full speed forward
+// Full speed
 ledcWrite(ENA, 255);
 ledcWrite(ENB, 255);
-digitalWrite(in1, HIGH); digitalWrite(in2, LOW);   // Motor A forward
-digitalWrite(in3, HIGH); digitalWrite(in4, LOW);   // Motor B forward
+
+// Forward
+digitalWrite(in1, HIGH); digitalWrite(in2, LOW);   // Motor A
+digitalWrite(in3, HIGH); digitalWrite(in4, LOW);   // Motor B
 
 // Reverse
-digitalWrite(in1, LOW);  digitalWrite(in2, HIGH);  // Motor A reverse
-digitalWrite(in3, LOW);  digitalWrite(in4, HIGH);  // Motor B reverse
-```
-To set an intermediate speed, replace `255` with any value between `0` and `255`.
----
-Full Code
+digitalWrite(in1, LOW);  digitalWrite(in2, HIGH);  // Motor A
+digitalWrite(in3, LOW);  digitalWrite(in4, HIGH);  // Motor B
 ```cpp
 //MOTOR A
 int ENA = 18;
