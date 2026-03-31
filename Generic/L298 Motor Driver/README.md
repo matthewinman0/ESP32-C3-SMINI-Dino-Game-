@@ -10,15 +10,24 @@ ENA / ENB — Enable pins for Motor A and Motor B. These accept a PWM signal to 
 IN1 / IN2 — Direction control for Motor A
 IN3 / IN4 — Direction control for Motor B
 ---
-Direction Control Truth Table
-IN1	IN2	Motor A Behaviour
-LOW	LOW	Off (coasting)
-HIGH	LOW	Forward
-LOW	HIGH	Reverse
-HIGH	HIGH	Brake (motor locked)
-The same logic applies to IN3 / IN4 for Motor B.
+## Direction Control Truth Table
+
+### Motor A (IN1 / IN2)
+
+| IN1  | IN2  | Motor Behaviour        |
+|------|------|------------------------|
+| LOW  | LOW  | Off (coasting)         |
+| HIGH | LOW  | Forward                |
+| LOW  | HIGH | Reverse                |
+| HIGH | HIGH | Brake (motor locked)   |
+
+### Motor B (IN3 / IN4)
+
+> The same logic applies as Motor A.
+
+### Notes
+
 > **Note:** ENA/ENB must have a non-zero PWM value for the motor to actually move, even if the direction pins are set correctly.
----
 ## Wiring
 
 | L298N Pin | ESP32 Pin                         | Notes                                 |
