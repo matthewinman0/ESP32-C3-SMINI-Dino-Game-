@@ -1,14 +1,40 @@
-ESP32 L298N Motor Driver Control
-A simple guide to controlling DC motors with an ESP32 and the L298N H-bridge motor driver module, using the ESP32's LEDC peripheral for PWM-based speed control.
+# ESP32 + L298N Motor Driver Control
+
+This guide explains how to control DC motors using an ESP32 and the L298N H-bridge motor driver. It covers the basics of how the driver works and how to use the ESP32’s LEDC peripheral to achieve smooth PWM-based speed control.
+
 ---
-What is the L298N?
-The L298N is a dual H-bridge motor driver IC, meaning it can independently control two DC motors — both speed and direction. It accepts a logic-level input (3.3V or 5V) making it compatible with the ESP32 straight out of the box.
+
+## What is the L298N?
+
+The L298N is a dual H-bridge motor driver IC that allows you to control two DC motors independently. With it, you can control both the **speed** and **direction** of each motor.
+
+It accepts standard logic-level inputs (3.3V or 5V), making it directly compatible with the ESP32 without additional level shifting.
+
 ---
-Pin Overview
-The L298N has two types of control pins:
-ENA / ENB — Enable pins for Motor A and Motor B. These accept a PWM signal to control motor speed. A higher duty cycle = faster motor. With the ESP32, these are driven using the LEDC peripheral.
-IN1 / IN2 — Direction control for Motor A
-IN3 / IN4 — Direction control for Motor B
+
+## Pin Overview
+
+The L298N uses two main types of control pins:
+
+### Enable Pins (Speed Control)
+
+- **ENA (Motor A)**
+- **ENB (Motor B)**
+
+These pins control motor speed using PWM. A higher duty cycle results in a faster motor.
+
+On the ESP32, PWM signals are generated using the **LEDC peripheral**, which provides precise and efficient hardware-based control.
+
+---
+
+### Direction Pins
+
+- **IN1 / IN2** — Control the direction of **Motor A**
+- **IN3 / IN4** — Control the direction of **Motor B**
+
+By setting these pins HIGH or LOW in different combinations, you can make the motor spin forward, reverse, coast, or brake.
+
+---
 ---
 ## Direction Control Truth Table
 
